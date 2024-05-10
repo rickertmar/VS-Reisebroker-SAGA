@@ -34,7 +34,6 @@ public class HotelService {
                 //if type is booking request
                 //if type is cancel request
 
-
         //send message to message broker
     }
 
