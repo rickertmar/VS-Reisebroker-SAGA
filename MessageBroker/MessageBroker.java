@@ -53,6 +53,7 @@ public class MessageBroker {
                         //take RANDOM message from waitingforAnswer
                         //if it is older than 5 seconds
                         //send back to original sender
+                        //after sending set timestamp to now
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
