@@ -1,15 +1,29 @@
 package MessageBroker;
 
+import java.util.HashMap;
+import java.util.concurrent.BlockingQueue;
+
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.SynchronousQueue;
 
 public class MessageBroker {
-    Synchronized blockingQueue messageQueue = new blockingQueue<Message>();
-    //transaction id -> message
-    Synchronized Map<> waitingforAnswer = new HashMap<String, Message>();
+    private static SynchronousQueue<Message> messageQueue;
 
-    //todo methods for synchronizing
+    //transaction id -> message needs to be concurent
+    private static ConcurrentHashMap<String, Message> waitingforAnswer = new ConcurrentHashMap<String, Message>();
 
-    class Worker extends Thread {
+
+    public static void send(Message message) {
+        try {
+            messageQueue.put(message);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+   static class Worker extends Thread {
         public void run() {
             while (true) {
                 try {
@@ -18,11 +32,11 @@ public class MessageBroker {
 
                     switch (message.getContent().getClass().getName()) {
                         case "ComboBooking":
-                            FlightBooking flightBooking = ((ComboBooking) message.getContent()).flightBooking;
+                            FlightBooking flightBooking = ((ComboBooking) message.getContent()).getFlightBooking();
                             //line to send to flight service
                             waitingforAnswer.put(message.getTransactionId(), message);
 
-                            HotelBooking hotelBooking = ((ComboBooking) message.getContent()).hotelBooking;
+                            HotelBooking hotelBooking = ((ComboBooking) message.getContent()).getHotelBooking();
                             //line to send to hotel service
                             waitingforAnswer.put(message.getTransactionId(), message);
                             break;
@@ -46,7 +60,7 @@ public class MessageBroker {
                 }
             }
         }
-        class Deamon extends Thread {
+       static class Deamon extends Thread {
             public void run() {
                 while (true) {
                     try {
@@ -56,7 +70,7 @@ public class MessageBroker {
                         //after sending set timestamp to now
 
 
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

@@ -1,16 +1,23 @@
 package HotelService;
 
+import MessageBroker.MessageBroker;
+import MessageBroker.Message;
+import MessageBroker.Answer;
+import MessageBroker.HotelBooking;
+import test.BookingRequest;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
 
 
+
+
 public class HotelService {
     public final String name;
     private Hotel[] hotels;
-    //map transaction id to answer message
-    private Map<String, test.BookingRequest> waitingForAnswer = new HashMap<String, test.BookingRequest>();
+
 
     public HotelService(String name,int numHotels) {
         this.name = name;
@@ -23,7 +30,7 @@ public class HotelService {
 
 
 
-    public void recieveMessage(test.BookingRequest bookingRequest) {
+    public void recieveMessage(Message RequestMessage) {
         //random chance to fail -> return
 
         //check map if transaction id is already there
@@ -35,20 +42,23 @@ public class HotelService {
                 //if type is cancel request
 
         //send message to message broker
+         }
     }
 
     public void sendMessage(Boolean success, String transactionId) {
         //random chance to fail -> return
 
         //send ANSWER message to message broker
-    }
+        MessageBroker.send(new Message(this.name, RequestMessage.getSender(), new Answer(RequestMessage.getTransactionId(), true)));
+
+        }
 
 
 
 
-}
 
-private class Hotel {
+
+class Hotel {
     private  Random random = new Random();
     private String name;
     private int totalBeds;
@@ -61,8 +71,8 @@ private class Hotel {
         this.name = "Hotel " + random.nextInt(1000);
         this.totalBeds = random.nextInt(100,200);
         this.availableBeds = random.nextInt(50,100);
-        this.bookingRequestQueue = new blockingQueue<test.BookingRequest>();
-        this.confirmationMessageQueue = new blockingQueue<test.ConfirmationMessage>();
+        this.bookingRequestQueue = new BlockingQueue<BookingRequest>();
+        this.confirmationMessageQueue = new BlockingQueue<Answer>();
     }
 
     public void processRequests() {
@@ -105,3 +115,4 @@ private class Hotel {
         return totalBeds;
     }
 }
+

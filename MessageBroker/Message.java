@@ -10,75 +10,8 @@ import java.time.LocalDateTime;
 interface MessageContent {
 }
 
-class ComboBooking implements MessageContent {
-   private FlightBooking flightBooking;
-   private HotelBooking hotelBooking;
-
-   // Constructor
-   public ComboBooking(FlightBooking flightBooking, HotelBooking hotelBooking) {
-      this.flightBooking = flightBooking;
-      this.hotelBooking = hotelBooking;
-   }
-}
-
-// Concrete class for HotelBooking
-class HotelBooking implements MessageContent {
-   private String hotelName;
-   private int numberOfRooms;
-
-   // Constructor
-   public HotelBooking(String hotelName, int numberOfRooms) {
-      this.hotelName = hotelName;
-      this.numberOfRooms = numberOfRooms;
-   }
-
-}
-
-// Concrete class for FlightBooking
-class FlightBooking implements MessageContent {
-   private String flightNumber;
-   private int numberOfSeats;
-
-   // Constructor
-   public FlightBooking(String flightNumber, int numberOfSeats) {
-      this.flightNumber = flightNumber;
-      this.numberOfSeats = numberOfSeats;
-   }
-}
-
-// Concrete class for FlightCancel
-class FlightCancel implements MessageContent {
-   private String flightNumber;
-
-   // Constructor
-   public FlightCancel(String flightNumber) {
-      this.flightNumber = flightNumber;
-   }
-}
-
-// Concrete class for HotelCancel
-class HotelCancel implements MessageContent {
-   private String hotelName;
-
-   // Constructor
-   public HotelCancel(String hotelName) {
-      this.hotelName = hotelName;
-   }
-}
-
-// Concrete class for Answer
-class Answer implements MessageContent {
-   private boolean success;
-
-   // Constructor
-   public Answer(boolean success) {
-      this.success = success;
-   }
-
-}
-
 // Message class that holds the unique transaction ID, content, recipients, and sender
-final class Message {
+public class Message {
    private String transactionId;
    private String recipient;
    private String sender;
@@ -92,6 +25,29 @@ final class Message {
       this.content = content;
       this.timestamp = LocalDateTime.now(); // Gets the current time
    }
+
+    // Getters
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public MessageContent getContent() {
+        return content;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+
 
 }
 
