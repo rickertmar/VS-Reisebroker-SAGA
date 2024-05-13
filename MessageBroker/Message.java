@@ -25,6 +25,13 @@ public class Message {
       this.content = content;
       this.timestamp = LocalDateTime.now(); // Gets the current time
    }
+   public Message(String transactionId, String sender, String recipient, MessageContent content) {
+       this.transactionId = transactionId;
+       this.sender = sender;
+       this.recipient = recipient;
+       this.content = content;
+       this.timestamp = LocalDateTime.now(); // Gets the current time
+   }
 
     // Getters
     public String getTransactionId() {

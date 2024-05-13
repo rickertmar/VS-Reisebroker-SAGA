@@ -11,15 +11,20 @@ import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
 
+//CompletableFuture
+import java.util.concurrent.CompletableFuture;
+
 
 
 
 public class HotelService {
-    public final String name;
+    public String name;
     private Hotel[] hotels;
 
+    private Map<String, CompletableFuture<Message>> Answers = new HashMap<String, CompletableFuture<Message>>();
 
-    public HotelService(String name,int numHotels) {
+
+    public HotelService(String name, int numHotels) {
         this.name = name;
         hotels = new Hotel[numHotels];
         for (int i = 0; i < hotels.length; i++) {
@@ -28,30 +33,53 @@ public class HotelService {
     }
 
 
+    public void receiveMessage(Message RequestMessage) {
+        //todo random chance to not do anything HERE
 
+        String transactionId = RequestMessage.getTransactionId();
+        CompletableFuture<Message> cachedAnswer = Answers.get(transactionId);
 
-    public void recieveMessage(Message RequestMessage) {
-        //random chance to fail -> return
+        if (cachedAnswer != null) {
+            cachedAnswer.thenAccept(MessageBroker::send);
+        } else {
+            // Process the booking asynchronously
+            CompletableFuture<Message> newAnswer = CompletableFuture.supplyAsync(() -> {
+                HotelBooking hotelBooking = (HotelBooking) RequestMessage.getContent();
+                Hotel hotel = findHotel(hotelBooking.getHotelName());
+                boolean success = hotel.bookRooms(hotelBooking.getNumberOfRooms());
 
-        //check map if transaction id is already there
-        //if not add to map
+                return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(success));
+            });
 
-        //execute request
-        //map awaits answer
-                //if type is booking request
-                //if type is cancel request
+            // Cache the new CompletableFuture for future requests
+            Answers.put(transactionId, newAnswer);
 
-        //send message to message broker
-         }
+            // todo random chance to not send the message HERE
+
+            // Once the CompletableFuture completes, send the message
+            newAnswer.thenAccept(MessageBroker::send);
+        }
+    }
+    private Hotel findHotel(String hotelName) {
+        for (Hotel hotel : hotels) {
+            if (hotel.name.equals(hotelName)) {
+                return hotel;
+            }
+        }
+        return null;
     }
 
-    public void sendMessage(Boolean success, String transactionId) {
-        //random chance to fail -> return
 
-        //send ANSWER message to message broker
-        MessageBroker.send(new Message(this.name, RequestMessage.getSender(), new Answer(RequestMessage.getTransactionId(), true)));
-
+    private void sendFromCache(String transactionId)throws InterruptedException{
+        CompletableFuture<Message> answer = Answers.get(transactionId);
+        if (answer != null) {
+            answer.thenAccept((Message message) -> MessageBroker.send(message));
         }
+        else {
+            throw new InterruptedException();
+        }
+    }
+}
 
 
 
@@ -60,35 +88,18 @@ public class HotelService {
 
 class Hotel {
     private  Random random = new Random();
-    private String name;
+    public final String name;
     private int totalBeds;
     private int availableBeds;
-    private BlockingQueue<test.BookingRequest> bookingRequestQueue;
-    private BlockingQueue<test.ConfirmationMessage> confirmationMessageQueue;
+
 
     public Hotel() {
         // randomized initial available beds
         this.name = "Hotel " + random.nextInt(1000);
         this.totalBeds = random.nextInt(100,200);
         this.availableBeds = random.nextInt(50,100);
-        this.bookingRequestQueue = new BlockingQueue<BookingRequest>();
-        this.confirmationMessageQueue = new BlockingQueue<Answer>();
     }
 
-    public void processRequests() {
-        System.out.println("HotelService started on thread: " + Thread.currentThread().getName());
-        while (true) {
-            try {
-                test.BookingRequest request = bookingRequestQueue.take(); // Wait for a booking request
-                boolean success = bookRooms(request.getNumRooms());
-                // Send booking confirmation or failure message back to the message broker
-                test.ConfirmationMessage confirmationMessage = new test.ConfirmationMessage(request.getRequestId(), success);
-                confirmationMessageQueue.put(confirmationMessage);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public synchronized boolean bookRooms(int numRooms) {
         if (availableBeds >= numRooms) {
