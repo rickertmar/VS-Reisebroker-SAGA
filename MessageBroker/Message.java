@@ -6,10 +6,6 @@ import java.util.UUID;
 
 import java.time.LocalDateTime;
 
-// Define an interface for content
-interface MessageContent {
-}
-
 // Message class that holds the unique transaction ID, content, recipients, and sender
 public class Message {
    private final String transactionId;

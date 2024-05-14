@@ -1,6 +1,9 @@
 package MessageBroker;
 
 public class ComboBooking implements MessageContent {
+    public String getType() {
+        return "ComboBooking";
+    }
    private final FlightBooking flightBooking;
    private final HotelBooking hotelBooking;
 

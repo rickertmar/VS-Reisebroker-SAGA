@@ -1,5 +1,10 @@
 package MessageBroker;
 
+import HotelService.HotelService;
+import FlightService.FlightService;
+
+import Tripbroker.TripBroker;
+
 import java.time.LocalDateTime;
 
 import java.util.Map;
@@ -11,6 +16,25 @@ public class MessageBroker {
     //transaction id -> message needs to be concurent
     private static ConcurrentHashMap<String, Message> waitingforAnswer = new ConcurrentHashMap<String, Message>();
     private static int Timeout_ns =5000000;
+    private static ConcurrentHashMap<String, HotelService> HotelAdresses = new ConcurrentHashMap<String, HotelService>();
+    private static ConcurrentHashMap<String, FlightService> FlightAdresses = new ConcurrentHashMap<String, FlightService>();
+    private static TripBroker tripBroker;
+
+    public static void init(TripBroker tripBroker) {
+        MessageBroker.tripBroker = tripBroker;
+        messageQueue = new SynchronousQueue<Message>();
+        Worker worker = new Worker();
+        worker.start();
+        Worker.Deamon deamon = new Worker.Deamon();
+        deamon.start();
+    }
+    public static void registerHotelService(String name, HotelService hotelService) {
+        HotelAdresses.put(name, hotelService);
+    }
+
+    public static void registerFlightService(String name, FlightService flightService) {
+        FlightAdresses.put(name, flightService);
+    }
 
     public static void send(Message message) {
         try {
@@ -56,7 +80,7 @@ public class MessageBroker {
         }
         static void sendToService(Message message) {
             //todo send to service
-            switch (message.getContent().getClass().getName()) {
+            switch (message.getContent().getType()) {
                 case "ComboBooking":
                     FlightBooking flightBooking = ((ComboBooking) message.getContent()).getFlightBooking();
                     //line to send to flight service
@@ -74,6 +98,14 @@ public class MessageBroker {
                     //line to send to flight service
                     waitingforAnswer.put(message.getTransactionId(), message);
                     break;
+                case "FlightCancel":
+                    //line to send to flight service
+                    waitingforAnswer.put(message.getTransactionId(), message);
+                    break;
+
+                case "HotelCancel":
+                    //line to send to hotel service
+                    waitingforAnswer.put(message.getTransactionId(), message);
                 case "Answer":
                     //send back to original sender
                     waitingforAnswer.remove(message.getTransactionId());

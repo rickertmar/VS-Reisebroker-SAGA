@@ -1,32 +1,41 @@
-package HotelService;
+package FlightService;
 
-import MessageBroker.HotelCancel;
 import MessageBroker.MessageBroker;
 import MessageBroker.Message;
+
 import MessageBroker.Answer;
-import MessageBroker.HotelBooking;
+import MessageBroker.FlightBooking;
+import MessageBroker.FlightCancel;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
 //CompletableFuture
 import java.util.concurrent.CompletableFuture;
 
-public class HotelService {
+public class FlightService {
     public String name;
-    private Hotel[] hotels;
+    private Flight[] flights;
 
     private Map<String, CompletableFuture<Message>> Answers = new HashMap<String, CompletableFuture<Message>>();
-
-    public void init(String name, Hotel[] hotels){
-        this.name = name;
-        this.hotels = hotels;
-    }
 
     public String getName() {
         return name;
     }
-    public Hotel[] getHotels() {
-        return hotels;
+    public String[] getflights() {
+        String[] flightNames = new String[flights.length];
+        for (int i = 0; i < flights.length; i++) {
+            flightNames[i] = flights[i].name;
+        }
+        return flightNames;
+    }
+
+    private Flight findFlight(String flightName) {
+        for (Flight flight : flights) {
+            if (flight.name.equals(flightName)) {
+                return flight;
+            }
+        }
+        return null;
     }
 
     public void receiveMessage(Message RequestMessage) {
@@ -41,20 +50,22 @@ public class HotelService {
             // Process the booking asynchronously
             CompletableFuture<Message> newAnswer = CompletableFuture.supplyAsync(() -> {
                 switch (RequestMessage.getContent().getType()){
-                    case "HotelBooking":
-                        HotelBooking hotelBooking = (HotelBooking) RequestMessage.getContent();
-                        Hotel hotel = findHotel(hotelBooking.getHotelName());
-                        boolean success = hotel.bookRooms(hotelBooking.getNumberOfRooms());
+                    case "FlightBooking":
+                        FlightBooking flightBooking = (FlightBooking) RequestMessage.getContent();
+                        Flight flight = findFlight(flightBooking.getFlightNumber());
+                        boolean success = flight.bookSeats(flightBooking.getNumberOfSeats());
                         return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(success));
-                    case "HotelCancel":
-                        HotelCancel hotelCancel = (HotelCancel) RequestMessage.getContent();
-                        Hotel hotel1 = findHotel(hotelCancel.getHotelName());
-                        hotel1.releaseRooms(hotelCancel.getNoRooms());
+                    case "FlightCancel":
+                        FlightCancel flightCancel = (FlightCancel) RequestMessage.getContent();
+                        Flight flight1= findFlight(flightCancel.getFlightNumber());
+                        flight1.releaseSeats(flightCancel.getNoSeats());
                         return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(true));
                     default:
                         //invalid type
                         return new Message(transactionId,this.name, RequestMessage.getSender(), new Answer(false));
-                }});
+                }
+
+            });
             // Cache the new CompletableFuture for future requests
             Answers.put(transactionId, newAnswer);
 
@@ -64,14 +75,7 @@ public class HotelService {
             newAnswer.thenAccept(MessageBroker::send);
         }
     }
-    private Hotel findHotel(String hotelName) {
-        for (Hotel hotel : hotels) {
-            if (hotel.name.equals(hotelName)) {
-                return hotel;
-            }
-        }
-        return null;
-    }
+
 
 
     private void sendFromCache(String transactionId)throws InterruptedException{
@@ -85,43 +89,41 @@ public class HotelService {
     }
 }
 
-class Hotel {
-    private  Random random = new Random();
+class Flight {
+    private Random random = new Random();
     public final String name;
-    private int totalBeds;
-    private int availableBeds;
+    private final int totalSeats;
+    private int availableSeats;
 
 
-    public Hotel() {
-        // randomized initial available beds
-        this.name = "Hotel " + random.nextInt(1000);
-        this.totalBeds = random.nextInt(100,200);
-        this.availableBeds = random.nextInt(50,100);
+    public Flight(String name, int totalSeats, int availableBeds) {
+        this.name = name;
+        this.totalSeats = totalSeats;
+        this.availableSeats = availableBeds;
+
     }
 
-    public synchronized boolean bookRooms(int numRooms) {
-        if (availableBeds >= numRooms) {
-            availableBeds -= numRooms;
-            System.out.println(numRooms + " rooms booked successfully at " + name);
-            System.out.println("Available beds: " + availableBeds);
+    public synchronized boolean bookSeats(int numSeats) {
+        if (numSeats <= availableSeats) {
+            availableSeats -= numSeats;
+            System.out.println(numSeats + " seats booked at " + name);
             return true;
-        } else {
-            System.out.println("Insufficient rooms available at " + name);
-            return false;
         }
+        System.out.println("Failed to book " + numSeats + " seats at " + name);
+        return false;
     }
 
-    public synchronized void releaseRooms(int numRooms) {
-        availableBeds += numRooms;
+    public synchronized void releaseSeats(int numRooms) {
+        availableSeats += numRooms;
         System.out.println(numRooms + " rooms released at " + name);
     }
 
-    public synchronized int getAvailableBeds() {
-        return availableBeds;
+    public synchronized int getAvailableSeats() {
+        return availableSeats;
     }
 
-    public synchronized int getTotalBeds() {
-        return totalBeds;
+    public synchronized int getTotalSeats() {
+        return totalSeats;
     }
 }
 
