@@ -12,11 +12,11 @@ interface MessageContent {
 
 // Message class that holds the unique transaction ID, content, recipients, and sender
 public class Message {
-   private String transactionId;
-   private String recipient;
-   private String sender;
-   private MessageContent content;
-   private LocalDateTime timestamp;
+   private final String transactionId;
+   private final String recipient;
+   private final String sender;
+   private final MessageContent content;
+   private final LocalDateTime timestamp;
    // Constructor
    public Message(String sender, String recipient, MessageContent content) {
       this.transactionId = UUID.randomUUID().toString(); // Generates a unique ID

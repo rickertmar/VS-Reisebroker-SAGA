@@ -2,8 +2,8 @@ package MessageBroker;
 
 // Concrete class for HotelBooking
 public class HotelBooking implements MessageContent {
-   private String hotelName;
-   private int numberOfRooms;
+   private final String hotelName;
+   private final int numberOfRooms;
 
     public String getHotelName() {
         return hotelName;

@@ -2,9 +2,9 @@ package MessageBroker;
 
 // Concrete class for Answer
 public class Answer implements MessageContent {
-   private boolean success;
+   private final boolean success;
 
-        public boolean isSuccess() {
+   public boolean isSuccess() {
             return success;
         }
    // Constructor

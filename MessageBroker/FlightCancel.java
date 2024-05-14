@@ -2,9 +2,9 @@ package MessageBroker;
 
 // Concrete class for FlightCancel
 public class FlightCancel implements MessageContent {
-   private String flightNumber;
+   private final String flightNumber;
 
-    public String getFlightNumber() {
+    public final String getFlightNumber() {
         return flightNumber;
     }
 

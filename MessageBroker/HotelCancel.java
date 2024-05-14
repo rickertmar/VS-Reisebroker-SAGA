@@ -2,7 +2,7 @@ package MessageBroker;
 
 // Concrete class for HotelCancel
 public class HotelCancel implements MessageContent {
-   private String hotelName;
+   private final String hotelName;
 
    public String getHotelName() {
       return hotelName;

@@ -4,25 +4,17 @@ import MessageBroker.MessageBroker;
 import MessageBroker.Message;
 import MessageBroker.Answer;
 import MessageBroker.HotelBooking;
-import test.BookingRequest;
-
-import java.util.concurrent.BlockingQueue;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
-
 //CompletableFuture
 import java.util.concurrent.CompletableFuture;
-
-
-
 
 public class HotelService {
     public String name;
     private Hotel[] hotels;
 
     private Map<String, CompletableFuture<Message>> Answers = new HashMap<String, CompletableFuture<Message>>();
-
 
     public HotelService(String name, int numHotels) {
         this.name = name;
@@ -31,7 +23,6 @@ public class HotelService {
             hotels[i] = new Hotel();
         }
     }
-
 
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
@@ -47,10 +38,8 @@ public class HotelService {
                 HotelBooking hotelBooking = (HotelBooking) RequestMessage.getContent();
                 Hotel hotel = findHotel(hotelBooking.getHotelName());
                 boolean success = hotel.bookRooms(hotelBooking.getNumberOfRooms());
-
                 return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(success));
             });
-
             // Cache the new CompletableFuture for future requests
             Answers.put(transactionId, newAnswer);
 
@@ -81,11 +70,6 @@ public class HotelService {
     }
 }
 
-
-
-
-
-
 class Hotel {
     private  Random random = new Random();
     public final String name;
@@ -99,7 +83,6 @@ class Hotel {
         this.totalBeds = random.nextInt(100,200);
         this.availableBeds = random.nextInt(50,100);
     }
-
 
     public synchronized boolean bookRooms(int numRooms) {
         if (availableBeds >= numRooms) {

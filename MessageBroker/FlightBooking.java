@@ -2,8 +2,8 @@ package MessageBroker;
 
 // Concrete class for FlightBooking
 public class FlightBooking implements MessageContent {
-   private String flightNumber;
-   private int numberOfSeats;
+   private final String flightNumber;
+   private final int numberOfSeats;
 
     public String getFlightNumber() {
         return flightNumber;

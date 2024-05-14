@@ -1,8 +1,8 @@
 package MessageBroker;
 
 public class ComboBooking implements MessageContent {
-   private FlightBooking flightBooking;
-   private HotelBooking hotelBooking;
+   private final FlightBooking flightBooking;
+   private final HotelBooking hotelBooking;
 
     public FlightBooking getFlightBooking() {
         return flightBooking;
