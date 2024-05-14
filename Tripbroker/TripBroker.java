@@ -62,7 +62,33 @@ public class TripBroker {
         }
         if(message.getContent().getType().equals("Answer")) {
             Answer answer = (Answer) message.getContent();
-            comboBooking.update(transactionId, answer.isSuccess());
+            Status status = comboBooking.status;
+            switch (status){
+                case HotelPending:
+                    if(answer.isSuccess()){
+                        comboBooking.HotelAnswer(true);
+                        Message flightMessage = new Message(comboBooking.FlightTransactionID,name,FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()),comboBooking.flightBooking);
+                        sendToMessageBroker(flightMessage);
+                    }else{
+                        comboBooking.HotelAnswer(false);
+                        Message cancelMessage = new Message(comboBooking.HotelTransactionID,name,HotelToServiceMap.get(comboBooking.hotelBooking.getHotelName()),new HotelCancel(comboBooking.hotelBooking.getHotelName(),comboBooking.hotelBooking.getNumberOfRooms()));
+                        sendToMessageBroker(cancelMessage);
+                    }
+                    break;
+
+                case FlightPending:
+                    if(answer.isSuccess()){
+                        comboBooking.FlightAnswer(true);
+                    }else{
+                        comboBooking.FlightAnswer(false);
+                        Message cancelMessage = new Message(comboBooking.FlightTransactionID,name,FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()),new FlightCancel(comboBooking.flightBooking.getFlightNumber(),comboBooking.flightBooking.getNumberOfSeats()));
+                        sendToMessageBroker(cancelMessage);
+                    }
+                    break;
+
+                default:
+                    System.out.println("Invalid Status for Answer");
+            }
         }
 
     }
@@ -121,6 +147,14 @@ class ComboBooking{
             status = Status.HotelConfirmed;
         }else{
             status = Status.HotelCanceled;
+        }
+    }
+
+    public void FlightAnswer(boolean success){
+        if(success){
+            status = Status.FlightConfirmed;
+        }else{
+            status = Status.FlightCanceled;
         }
     }
 
