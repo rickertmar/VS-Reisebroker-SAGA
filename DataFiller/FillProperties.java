@@ -35,8 +35,8 @@ public class FillProperties {
         }
 
               
-        properties.setProperty("NotSendMessage", Integer.parseInt(getChanceToNotSendMessage());
-        properties.setProperty("NotDoAnything", Integer.parseInt(getChanceToNotDoAnything());
+        properties.setProperty("NotSendMessage", Integer.toString(getChanceToNotSendMessage()));
+        properties.setProperty("NotDoAnything", Integer.toString(getChanceToNotDoAnything()));
 
         return properties;
     }
@@ -57,7 +57,6 @@ public class FillProperties {
 
     private static int getChanceToNotSendMessage() {
         return (int) (Math.random() * 101);
-
     }
 
     private static int getChanceToNotDoAnything() {
