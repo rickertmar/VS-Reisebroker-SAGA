@@ -1,5 +1,6 @@
 package HotelService;
 
+import DataFiller.FillProperties;
 import MessageBroker.HotelCancel;
 import MessageBroker.MessageBroker;
 import MessageBroker.Message;
@@ -28,9 +29,12 @@ public class HotelService {
     public Hotel[] getHotels() {
         return hotels;
     }
-
+    private Random randomNumber = new Random();
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
+        if (randomNumber.nextInt(100) < FillProperties.getChanceToNotDoAnything()) {
+            return;
+        }
 
         String transactionId = RequestMessage.getTransactionId();
         CompletableFuture<Message> cachedAnswer = Answers.get(transactionId);
@@ -59,6 +63,9 @@ public class HotelService {
             Answers.put(transactionId, newAnswer);
 
             // todo random chance to not send the message HERE
+            if (randomNumber.nextInt(100) < FillProperties.getChanceToNotSendMessage()) {
+                return;
+            }
 
             // Once the CompletableFuture completes, send the message
             newAnswer.thenAccept(MessageBroker::send);

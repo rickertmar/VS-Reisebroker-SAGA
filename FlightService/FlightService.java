@@ -46,8 +46,12 @@ public class FlightService {
         this.flights = flights;
     }
 
+    private Random randomNumber = new Random();
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
+        if (randomNumber.nextInt(100) < FillProperties.getChanceToNotDoAnything()) {
+            return;
+        }
 
 
         String transactionId = RequestMessage.getTransactionId();
@@ -79,6 +83,9 @@ public class FlightService {
             Answers.put(transactionId, newAnswer);
 
             // todo random chance to not send the message HERE
+            if (randomNumber.nextInt(100) < FillProperties.getChanceToNotSendMessage()) {
+                return;
+            }
 
             // Once the CompletableFuture completes, send the message
             newAnswer.thenAccept(MessageBroker::send);
