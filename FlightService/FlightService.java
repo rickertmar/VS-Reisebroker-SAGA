@@ -38,6 +38,11 @@ public class FlightService {
         return null;
     }
 
+    public FlightService(String name, Flight[] flights){
+        this.name = name;
+        this.flights = flights;
+    }
+
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
 
