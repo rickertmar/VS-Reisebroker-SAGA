@@ -1,17 +1,22 @@
+package DataFiller;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import HotelService.HotelService;
 
-public class Gernerator {
+import FlightService.Flight;
+import HotelService.Hotel;
+
+//
+public class Generator {
     public static void main(String[] args) {
         fillHotels();
         fillFlights();
     }
 
-    public static void fillHotels() {
-        try (InputStream inputStream = Gernerator.class.getResourceAsStream("/hotels.properties")) {
+    public static Hotel[] fillHotels() {
+        try (InputStream inputStream = Generator.class.getResourceAsStream("/hotels.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
 
@@ -27,8 +32,8 @@ public class Gernerator {
         }
     }
 
-    public static void fillFlights() {
-        try (InputStream inputStream = Gernerator.class.getResourceAsStream("/flights.properties")) {
+    public static Flight[] fillFlights() {
+        try (InputStream inputStream = Generator.class.getResourceAsStream("/flights.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
 

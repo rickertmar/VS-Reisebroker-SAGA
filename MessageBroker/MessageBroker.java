@@ -81,35 +81,35 @@ public class MessageBroker {
         static void sendToService(Message message) {
             //todo send to service
             switch (message.getContent().getType()) {
-                case "ComboBooking":
-                    FlightBooking flightBooking = ((ComboBooking) message.getContent()).getFlightBooking();
-                    //line to send to flight service
-                    waitingforAnswer.put(message.getTransactionId(), message);
-
-                    HotelBooking hotelBooking = ((ComboBooking) message.getContent()).getHotelBooking();
-                    //line to send to hotel service
-                    waitingforAnswer.put(message.getTransactionId(), message);
-                    break;
                 case "HotelBooking":
                     //line to send to hotel service
                     waitingforAnswer.put(message.getTransactionId(), message);
+                    HotelService hotelService = HotelAdresses.get(message.getRecipient());
+                    hotelService.receiveMessage(message);
                     break;
                 case "FlightBooking":
                     //line to send to flight service
                     waitingforAnswer.put(message.getTransactionId(), message);
+                    FlightService flightService = FlightAdresses.get(message.getRecipient());
+                    flightService.receiveMessage(message);
                     break;
                 case "FlightCancel":
                     //line to send to flight service
                     waitingforAnswer.put(message.getTransactionId(), message);
+                    FlightService flightService1 = FlightAdresses.get(message.getRecipient());
+                    flightService1.receiveMessage(message);
                     break;
 
                 case "HotelCancel":
                     //line to send to hotel service
                     waitingforAnswer.put(message.getTransactionId(), message);
+                    HotelService hotelService1 = HotelAdresses.get(message.getRecipient());
+                    hotelService1.receiveMessage(message);
                 case "Answer":
-                    //send back to original sender
+                    //send back to original sender ( allways trip broker)
                     waitingforAnswer.remove(message.getTransactionId());
-                    send(message);
+                    tripBroker.receiveMessage(message);
+
                     break;
             }
         }

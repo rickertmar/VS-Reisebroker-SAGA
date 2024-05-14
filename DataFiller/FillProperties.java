@@ -3,12 +3,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+
+
 public class FillProperties {
     public static void main(String[] args) {
         int numItems = 5; // Anzahl der zu generierenden Hotels und Flüge
 
         Properties data = generateData(numItems);
         saveDataToFile(data);
+    }
+
+    static Properties FailChances = new Properties();
+    static {
+        FailChances.setProperty("FailChance_noAnswer", "10");
+        FailChances.setProperty("FailChance_noAnswer", "10");
     }
 
     private static Properties generateData(int numItems) {
@@ -49,4 +57,6 @@ public class FillProperties {
             e.printStackTrace();
         }
     }
+
+
 }

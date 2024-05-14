@@ -12,9 +12,12 @@ import java.util.Map;
 //CompletableFuture
 import java.util.concurrent.CompletableFuture;
 
+import DataFiller.FillProperties;
+
 public class FlightService {
     public String name;
     private Flight[] flights;
+    private static Random random = new Random();
 
     private Map<String, CompletableFuture<Message>> Answers = new HashMap<String, CompletableFuture<Message>>();
 
@@ -45,6 +48,7 @@ public class FlightService {
 
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
+
 
         String transactionId = RequestMessage.getTransactionId();
         CompletableFuture<Message> cachedAnswer = Answers.get(transactionId);
@@ -91,44 +95,6 @@ public class FlightService {
         else {
             throw new InterruptedException();
         }
-    }
-}
-
-class Flight {
-    private Random random = new Random();
-    public final String name;
-    private final int totalSeats;
-    private int availableSeats;
-
-
-    public Flight(String name, int totalSeats, int availableBeds) {
-        this.name = name;
-        this.totalSeats = totalSeats;
-        this.availableSeats = availableBeds;
-
-    }
-
-    public synchronized boolean bookSeats(int numSeats) {
-        if (numSeats <= availableSeats) {
-            availableSeats -= numSeats;
-            System.out.println(numSeats + " seats booked at " + name);
-            return true;
-        }
-        System.out.println("Failed to book " + numSeats + " seats at " + name);
-        return false;
-    }
-
-    public synchronized void releaseSeats(int numRooms) {
-        availableSeats += numRooms;
-        System.out.println(numRooms + " rooms released at " + name);
-    }
-
-    public synchronized int getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public synchronized int getTotalSeats() {
-        return totalSeats;
     }
 }
 
