@@ -11,6 +11,8 @@ import DataFiller.Generator;
 import FlightService.Flight;
 import HotelService.Hotel;
 
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
         //init message broker
@@ -18,15 +20,15 @@ public class Main {
 
 
         //create 2 flight services
-        Flight[] flights1 = Generator.fillFlights();//sm like that
+        Flight[] flights1 = Generator.fillFlights().toArray(new Flight[0]);
         FlightService flightService1 = new FlightService("FlightService1", flights1);
-        Flight[] flights2 = Generator.fillFlights();//sm like that
+        Flight[] flights2 = Generator.fillFlights().toArray(new Flight[0]);//sm like that
         FlightService flightService2 = new FlightService("FlightService2", flights2);
 
         //create 2 hotel services
-        Hotel[] hotels1 = Generator.fillHotels();//sm like that
+        Hotel[] hotels1 = Generator.fillHotels().toArray(new Hotel[0]);//sm like that
         HotelService hotelService1 = new HotelService("HotelService1", hotels1);
-        Hotel[] hotels2 = Generator.fillHotels();//sm like that
+        Hotel[] hotels2 = Generator.fillHotels().toArray(new Hotel[0]);//sm like that
         HotelService hotelService2 = new HotelService("HotelService2", hotels2);
 
         //register services
@@ -42,6 +44,13 @@ public class Main {
 
         TripBroker.addHotels(hotelService1.getHotels(), hotelService1.getName());
         TripBroker.addHotels(hotelService2.getHotels(), hotelService2.getName());
+
+        //add flights to Clients
+        Client.addFlights(flightService1.getFlights());
+        Client.addFlights(flightService2.getFlights());
+        //add hotels to Clients
+        Client.addHotels(hotelService1.getHotels());
+        Client.addHotels(hotelService2.getHotels());
 
         Client[] clients = new Client[FillProperties.getNoClients()];
         //instance  clients

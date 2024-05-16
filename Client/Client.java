@@ -7,8 +7,8 @@ import java.util.Random;
 import Tripbroker.TripBroker;
 
 public class Client extends Thread {
-    static String[] hotels;
-    static String[] flights;
+    static String[] hotels= {};
+    static String[] flights={};
 
     static int timeoutUpper = 5000;
     static int timeoutLower = 1000;
@@ -41,9 +41,23 @@ public class Client extends Thread {
         this.timeoutLower = timeoutLower;
     }
 
+    public static void addHotels(String[] hotels) {//add to original
+        String[] temp = new String[Client.hotels.length + hotels.length];
+        System.arraycopy(Client.hotels, 0, temp, 0, Client.hotels.length);
+        System.arraycopy(hotels, 0, temp, Client.hotels.length, hotels.length);
+        Client.hotels = temp;
+    }
+
+    public static void addFlights(String[] flights) {
+        String[] temp = new String[Client.flights.length + flights.length];
+        System.arraycopy(Client.flights, 0, temp, 0, Client.flights.length);
+        System.arraycopy(flights, 0, temp, Client.flights.length, flights.length);
+        Client.flights = temp;
+    }
+
     public void run() {
         Random random = new Random();
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 4; i++){
             try {
                 Thread.sleep(random.nextInt(timeoutUpper - timeoutLower) + timeoutLower);
             } catch (InterruptedException e) {

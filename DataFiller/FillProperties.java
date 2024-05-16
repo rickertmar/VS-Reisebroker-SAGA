@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class FillProperties {
     public static void main(String[] args) {
-        int numItems = 5; // Anzahl der zu generierenden Hotels und Flüge
+        int numItems = 100; // Anzahl der zu generierenden Hotels und Flüge
 
         Properties data = generateData(numItems);
         saveDataToFile(data);
