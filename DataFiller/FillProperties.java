@@ -34,6 +34,10 @@ public class FillProperties {
             properties.setProperty(flightName, generateFlightData()); // Hier können Sie Ihre Flug-Daten generieren
         }
 
+              
+        properties.setProperty("NotSendMessage", Integer.toString(getChanceToNotSendMessage()));
+        properties.setProperty("NotDoAnything", Integer.toString(getChanceToNotDoAnything()));
+
         return properties;
     }
 
@@ -48,6 +52,19 @@ public class FillProperties {
         // Rückgabeformat kann entsprechend der Anforderungen angepasst werden
         return "Number of seats: " + (int) (Math.random() * 200); // Beispiel: Zufällige Anzahl von Sitzen zwischen 0 und 200
     }
+
+    // Samuel Anfang
+
+    private static int getChanceToNotSendMessage() {
+        return (int) (Math.random() * 101);
+    }
+
+    private static int getChanceToNotDoAnything() {
+        return (int) (Math.random() * 101);
+
+    }
+
+    // Samuel Ende
 
     private static void saveDataToFile(Properties data) {
         try (FileOutputStream fileOutputStream = new FileOutputStream("data.properties")) {
