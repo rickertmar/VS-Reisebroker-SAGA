@@ -12,6 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 
 public class MessageBroker {
+
+    static int nMessagesIn = 0;
+    static int nTimeouts = 0;
+    static int nMessagesOut = 0;
     private static SynchronousQueue<Message> messageQueue;
     //transaction id -> message needs to be concurent
     private static ConcurrentHashMap<String, Message> waitingforAnswer = new ConcurrentHashMap<String, Message>();
@@ -49,7 +53,9 @@ public class MessageBroker {
 
                 try {
                     Message message = messageQueue.take();
+                    nMessagesIn++;
                     sendToService(message);
+                    nMessagesOut++;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -64,8 +70,10 @@ public class MessageBroker {
                         for (Map.Entry<String, Message> entry : waitingforAnswer.entrySet()) {
                             Message message = entry.getValue();
                             if (message.getTimestamp().plusNanos(Timeout_ns).isBefore(LocalDateTime.now())) {
+                                nTimeouts++;
                                 //remove from waiting list
                                 waitingforAnswer.remove(message.getTransactionId());
+                                nMessagesOut++;
                                 //send back to original sender
                                 sendToService(message);
                             }
@@ -111,6 +119,11 @@ public class MessageBroker {
 
                     break;
             }
+        }
+        public static void printStats() {
+            System.out.println("Messages in: " + nMessagesIn);
+            System.out.println("Messages out: " + nMessagesOut);
+            System.out.println("Timeouts: " + nTimeouts);
         }
 
 }

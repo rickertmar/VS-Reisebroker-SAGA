@@ -61,7 +61,10 @@ public class Main {
         }
 
         //print stats
+        System.out.println("TripBroker stats:");
         TripBroker.printStats();
+        System.out.println("Message broker stats:");
+        MessageBroker.printStats();
 
 
     }

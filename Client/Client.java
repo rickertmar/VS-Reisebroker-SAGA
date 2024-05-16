@@ -43,7 +43,7 @@ public class Client extends Thread {
 
     public void run() {
         Random random = new Random();
-        while (true) {
+        for (int i = 0; i < 100; i++){
             try {
                 Thread.sleep(random.nextInt(timeoutUpper - timeoutLower) + timeoutLower);
             } catch (InterruptedException e) {
