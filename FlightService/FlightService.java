@@ -6,6 +6,7 @@ import MessageBroker.Message;
 import MessageBroker.Answer;
 import MessageBroker.FlightBooking;
 import MessageBroker.FlightCancel;
+
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,8 @@ public class FlightService {
     public String getName() {
         return name;
     }
-    public String[] getflights() {
+
+    public String[] getFlights() {
         String[] flightNames = new String[flights.length];
         for (int i = 0; i < flights.length; i++) {
             flightNames[i] = flights[i].name;
@@ -41,15 +43,17 @@ public class FlightService {
         return null;
     }
 
-    public FlightService(String name, Flight[] flights){
+    public FlightService(String name, Flight[] flights) {
         this.name = name;
         this.flights = flights;
     }
 
     private Random randomNumber = new Random();
+
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
-        if (randomNumber.nextInt(100) < FillProperties.getChanceToNotDoAnything()) {
+        int chanceToNotDoAnything = FillProperties.getChanceToNotDoAnything();
+        if (randomNumber.nextInt(100) < chanceToNotDoAnything) {
             return;
         }
 
@@ -62,7 +66,7 @@ public class FlightService {
         } else {
             // Process the booking asynchronously
             CompletableFuture<Message> newAnswer = CompletableFuture.supplyAsync(() -> {
-                switch (RequestMessage.getContent().getType()){
+                switch (RequestMessage.getContent().getType()) {
                     case "FlightBooking":
                         FlightBooking flightBooking = (FlightBooking) RequestMessage.getContent();
                         Flight flight = findFlight(flightBooking.getFlightNumber());
@@ -70,12 +74,12 @@ public class FlightService {
                         return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(success));
                     case "FlightCancel":
                         FlightCancel flightCancel = (FlightCancel) RequestMessage.getContent();
-                        Flight flight1= findFlight(flightCancel.getFlightNumber());
+                        Flight flight1 = findFlight(flightCancel.getFlightNumber());
                         flight1.releaseSeats(flightCancel.getNoSeats());
                         return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(true));
                     default:
                         //invalid type
-                        return new Message(transactionId,this.name, RequestMessage.getSender(), new Answer(false));
+                        return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(false));
                 }
 
             });
@@ -83,7 +87,8 @@ public class FlightService {
             Answers.put(transactionId, newAnswer);
 
             // todo random chance to not send the message HERE
-            if (randomNumber.nextInt(100) < FillProperties.getChanceToNotSendMessage()) {
+            int chanceToNotSendMessage = FillProperties.getChanceToNotSendMessage();
+            if (randomNumber.nextInt(100) < chanceToNotSendMessage) {
                 return;
             }
 
@@ -93,13 +98,11 @@ public class FlightService {
     }
 
 
-
-    private void sendFromCache(String transactionId)throws InterruptedException{
+    private void sendFromCache(String transactionId) throws InterruptedException {
         CompletableFuture<Message> answer = Answers.get(transactionId);
         if (answer != null) {
-            answer.thenAccept((Message message) -> MessageBroker.send(message));
-        }
-        else {
+            answer.thenAccept(MessageBroker::send);
+        } else {
             throw new InterruptedException();
         }
     }

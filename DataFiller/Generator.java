@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-
 import FlightService.Flight;
 import HotelService.Hotel;
 
-//
 public class Generator {
     public static void main(String[] args) {
         fillHotels();
@@ -24,10 +22,11 @@ public class Generator {
             properties.load(inputStream);
 
             properties.forEach((key, value) -> {
-                String hotelName = key.toString();
-                if (hotelName.startsWith("Hotel")) {
-                    int capacity = Integer.parseInt(value.toString().split(":")[1].trim());
-                    hotels.add(new Hotel(hotelName, capacity));
+                if (key.toString().startsWith("Hotel")) {
+                    String hotelName = key.toString();
+                    String bedsString = value.toString().split(":")[1].trim(); // Extracts the number of beds
+                    int numberOfBeds = Integer.parseInt(bedsString);
+                    hotels.add(new Hotel(hotelName, numberOfBeds));
                 }
             });
         } catch (IOException e) {
@@ -43,10 +42,11 @@ public class Generator {
             properties.load(inputStream);
 
             properties.forEach((key, value) -> {
-                String flightName = key.toString();
-                if (flightName.startsWith("Flight")) {
-                    int capacity = Integer.parseInt(value.toString().split(":")[1].trim());
-                    flights.add(new Flight(flightName, capacity));
+                if (key.toString().startsWith("Flight")) {
+                    String flightName = key.toString();
+                    String seatsString = value.toString().split(":")[1].trim();
+                    int numberOfSeats = Integer.parseInt(seatsString);
+                    flights.add(new Flight(flightName, numberOfSeats));
                 }
             });
         } catch (IOException e) {

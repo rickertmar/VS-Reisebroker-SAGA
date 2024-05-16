@@ -37,8 +37,8 @@ public class FillProperties {
         }
 
 
-        properties.setProperty("NotSendMessage", Integer.toString(getChanceToNotSendMessage()));
-        properties.setProperty("NotDoAnything", Integer.toString(getChanceToNotDoAnything()));
+        properties.setProperty("NotSendMessage", Integer.toString(generateChanceToNotSendMessage()));
+        properties.setProperty("NotDoAnything", Integer.toString(generateChanceToNotDoAnything()));
         properties.setProperty("NoClients", Integer.toString((int) (Math.random() * 50 + 50)));
 
         return properties;
@@ -58,13 +58,12 @@ public class FillProperties {
 
     // Samuel Anfang
 
-    public static int getChanceToNotSendMessage() {
+    public static int generateChanceToNotSendMessage() {
         return (int) (Math.random() * 100);
     }
 
-    public static int getChanceToNotDoAnything() {
+    public static int generateChanceToNotDoAnything() {
         return (int) (Math.random() * 100);
-
     }
 
     // Samuel Ende
@@ -78,6 +77,28 @@ public class FillProperties {
         }
     }
 
+
+    public static int getChanceToNotSendMessage() {
+        Properties properties = new Properties();
+        try (FileInputStream fileInputStream = new FileInputStream("data.properties")) {
+            properties.load(fileInputStream);
+            return Integer.parseInt(properties.getProperty("NotSendMessage"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static int getChanceToNotDoAnything() {
+        Properties properties = new Properties();
+        try (FileInputStream fileInputStream = new FileInputStream("data.properties")) {
+            properties.load(fileInputStream);
+            return Integer.parseInt(properties.getProperty("NotDoAnything"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
     public static int getNoClients() {
         Properties properties = new Properties();

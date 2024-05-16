@@ -37,8 +37,8 @@ public class Main {
         MessageBroker.registerHotelService(hotelService2.getName(), hotelService2);
 
         //register hotels and flights in tripbroker
-        TripBroker.addFlights(flightService1.getflights(), flightService1.getName());
-        TripBroker.addFlights(flightService2.getflights(), flightService2.getName());
+        TripBroker.addFlights(flightService1.getFlights(), flightService1.getName());
+        TripBroker.addFlights(flightService2.getFlights(), flightService2.getName());
 
         TripBroker.addHotels(hotelService1.getHotels(), hotelService1.getName());
         TripBroker.addHotels(hotelService2.getHotels(), hotelService2.getName());

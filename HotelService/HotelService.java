@@ -6,6 +6,7 @@ import MessageBroker.MessageBroker;
 import MessageBroker.Message;
 import MessageBroker.Answer;
 import MessageBroker.HotelBooking;
+
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +20,7 @@ public class HotelService {
     private Map<String, CompletableFuture<Message>> Answers = new HashMap<String, CompletableFuture<Message>>();
 
 
-
-    public HotelService(String name, Hotel[] hotels){
+    public HotelService(String name, Hotel[] hotels) {
         this.name = name;
         this.hotels = hotels;
     }
@@ -28,6 +28,7 @@ public class HotelService {
     public String getName() {
         return name;
     }
+
     public String[] getHotels() {
         String[] hotelNames = new String[hotels.length];
         for (int i = 0; i < hotels.length; i++) {
@@ -35,10 +36,13 @@ public class HotelService {
         }
         return hotelNames;
     }
+
     private Random randomNumber = new Random();
+
     public void receiveMessage(Message RequestMessage) {
         //todo random chance to not do anything HERE
-        if (randomNumber.nextInt(100) < FillProperties.getChanceToNotDoAnything()) {
+        int chanceToNotDoAnything = FillProperties.getChanceToNotDoAnything();
+        if (randomNumber.nextInt(100) < chanceToNotDoAnything) {
             return;
         }
 
@@ -50,7 +54,7 @@ public class HotelService {
         } else {
             // Process the booking asynchronously
             CompletableFuture<Message> newAnswer = CompletableFuture.supplyAsync(() -> {
-                switch (RequestMessage.getContent().getType()){
+                switch (RequestMessage.getContent().getType()) {
                     case "HotelBooking":
                         HotelBooking hotelBooking = (HotelBooking) RequestMessage.getContent();
                         Hotel hotel = findHotel(hotelBooking.getHotelName());
@@ -63,13 +67,15 @@ public class HotelService {
                         return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(true));
                     default:
                         //invalid type
-                        return new Message(transactionId,this.name, RequestMessage.getSender(), new Answer(false));
-                }});
+                        return new Message(transactionId, this.name, RequestMessage.getSender(), new Answer(false));
+                }
+            });
             // Cache the new CompletableFuture for future requests
             Answers.put(transactionId, newAnswer);
 
             // todo random chance to not send the message HERE
-            if (randomNumber.nextInt(100) < FillProperties.getChanceToNotSendMessage()) {
+            int chanceToNotSendMessage = FillProperties.getChanceToNotSendMessage();
+            if (randomNumber.nextInt(100) < chanceToNotSendMessage) {
                 return;
             }
 
@@ -77,6 +83,7 @@ public class HotelService {
             newAnswer.thenAccept(MessageBroker::send);
         }
     }
+
     private Hotel findHotel(String hotelName) {
         for (Hotel hotel : hotels) {
             if (hotel.name.equals(hotelName)) {
@@ -87,12 +94,11 @@ public class HotelService {
     }
 
 
-    private void sendFromCache(String transactionId)throws InterruptedException{
+    private void sendFromCache(String transactionId) throws InterruptedException {
         CompletableFuture<Message> answer = Answers.get(transactionId);
         if (answer != null) {
             answer.thenAccept((Message message) -> MessageBroker.send(message));
-        }
-        else {
+        } else {
             throw new InterruptedException();
         }
     }
