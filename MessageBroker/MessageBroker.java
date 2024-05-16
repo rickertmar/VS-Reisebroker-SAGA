@@ -19,13 +19,15 @@ public class MessageBroker {
 
     // Transaction id -> message needs to be concurrent
     private static ConcurrentHashMap<String, Message> waitingForAnswer = new ConcurrentHashMap<>();
-    private static int Timeout_ns = 0;
+    private static int Timeout_ns = 5000;
     private static ConcurrentHashMap<String, HotelService> HotelAddresses = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, FlightService> FlightAddresses = new ConcurrentHashMap<>();
 
     public static void init() {
-        Worker worker = new Worker();
-        worker.start();
+        for (int i = 0; i < 10; i++) {
+            Worker worker = new Worker();
+            worker.start();
+        }
         Daemon daemon = new Daemon();
         daemon.start();
     }

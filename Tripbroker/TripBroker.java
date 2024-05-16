@@ -86,12 +86,12 @@ public class TripBroker {
     private static void handleHotelPending(ComboBooking comboBooking, Answer answer) {
         if (answer.isSuccess()) {
             comboBooking.HotelAnswer(true);
-            Message flightMessage = new Message(comboBooking.HotelTransactionID, name, FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()), comboBooking.flightBooking);
+            Message flightMessage = new Message(comboBooking.TransactionID, name, FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()), comboBooking.flightBooking);
             sendToMessageBroker(flightMessage);
             comboBooking.status = Status.FlightPending;
         } else {
             comboBooking.HotelAnswer(false);
-            Message cancelMessage = new Message(comboBooking.HotelTransactionID, name, HotelToServiceMap.get(comboBooking.hotelBooking.getHotelName()), new HotelCancel(comboBooking.hotelBooking.getHotelName(), comboBooking.hotelBooking.getNumberOfRooms()));
+            Message cancelMessage = new Message(comboBooking.TransactionID, name, HotelToServiceMap.get(comboBooking.hotelBooking.getHotelName()), new HotelCancel(comboBooking.hotelBooking.getHotelName(), comboBooking.hotelBooking.getNumberOfRooms()));
             sendToMessageBroker(cancelMessage);
             nTransactionsFailed++;
             nHotelscanceled++;
@@ -106,7 +106,7 @@ public class TripBroker {
             comboBooking.FlightAnswer(false);
             nTransactionsFailed++;
             nFlightscanceled++;  // Correctly increment flight cancellations
-            Message cancelMessage = new Message(comboBooking.FlightTransactionID, name, FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()), new FlightCancel(comboBooking.flightBooking.getFlightNumber(), comboBooking.flightBooking.getNumberOfSeats()));
+            Message cancelMessage = new Message(comboBooking.TransactionID, name, FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()), new FlightCancel(comboBooking.flightBooking.getFlightNumber(), comboBooking.flightBooking.getNumberOfSeats()));
             sendToMessageBroker(cancelMessage);
         }
     }
@@ -135,8 +135,8 @@ public class TripBroker {
         ComboBooking comboBooking = new ComboBooking(hotelBooking, flightBooking);
 
         Message hotelMessage = new Message(name, hotelService, hotelBooking);
-        comboBooking.HotelTransactionID = hotelMessage.getTransactionId();
-        UUIDtoBookingMap.put(hotelMessage.getTransactionId(), comboBooking);
+        comboBooking.TransactionID= hotelMessage.getTransactionId();
+        UUIDtoBookingMap.put(comboBooking.TransactionID, comboBooking);
         sendToMessageBroker(hotelMessage);
     }
 
@@ -149,8 +149,7 @@ class ComboBooking {
     HotelBooking hotelBooking;
     FlightBooking flightBooking;
 
-    String FlightTransactionID;
-    String HotelTransactionID;
+    String TransactionID;
 
     Status status = Status.HotelPending;
 

@@ -10,8 +10,8 @@ public class Client extends Thread {
     static String[] hotels= {};
     static String[] flights={};
 
-    static int timeoutUpper = 5000;
-    static int timeoutLower = 1000;
+    static int timeoutUpper = 50;
+    static int timeoutLower = 10;
 
     static int maxRooms = 10;
     static int maxSeats = 10;
@@ -57,7 +57,7 @@ public class Client extends Thread {
 
     public void run() {
         Random random = new Random();
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < 20; i++){
             try {
                 Thread.sleep(random.nextInt(timeoutUpper - timeoutLower) + timeoutLower);
             } catch (InterruptedException e) {
