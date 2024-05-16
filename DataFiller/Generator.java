@@ -2,6 +2,8 @@ package DataFiller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -15,37 +17,41 @@ public class Generator {
         fillFlights();
     }
 
-    public static Hotel[] fillHotels() {
-        try (InputStream inputStream = Generator.class.getResourceAsStream("/hotels.properties")) {
+    public static List<Hotel> fillHotels() {
+        List<Hotel> hotels = new ArrayList<>();
+        try (InputStream inputStream = Generator.class.getResourceAsStream("/data.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
 
             properties.forEach((key, value) -> {
                 String hotelName = key.toString();
-                int capacity = Integer.parseInt(value.toString());
-                // Hier können Sie Ihre Hotelobjekte erstellen und weiterverarbeiten
-                HotelService hotel = new HotelService(hotelName, capacity);
-                // Zum Beispiel können Sie die Hotelobjekte in einer Liste speichern oder direkt verwenden
+                if (hotelName.startsWith("Hotel")) {
+                    int capacity = Integer.parseInt(value.toString().split(":")[1].trim());
+                    hotels.add(new Hotel(hotelName, capacity));
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return hotels;
     }
 
-    public static Flight[] fillFlights() {
-        try (InputStream inputStream = Generator.class.getResourceAsStream("/flights.properties")) {
+    public static List<Flight> fillFlights() {
+        List<Flight> flights = new ArrayList<>();
+        try (InputStream inputStream = Generator.class.getResourceAsStream("/data.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
 
             properties.forEach((key, value) -> {
                 String flightName = key.toString();
-                int capacity = Integer.parseInt(value.toString());
-                // Hier können Sie Ihre Flugobjekte erstellen und weiterverarbeiten
-                Flight flight = new Flight(flightName, capacity);
-                // Zum Beispiel können Sie die Flugobjekte in einer Liste speichern oder direkt verwenden
+                if (flightName.startsWith("Flight")) {
+                    int capacity = Integer.parseInt(value.toString().split(":")[1].trim());
+                    flights.add(new Flight(flightName, capacity));
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return flights;
     }
 }

@@ -4,10 +4,6 @@ import HotelService.HotelService;
 import MessageBroker.MessageBroker;
 
 import Tripbroker.TripBroker;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import Client.Client;
 
@@ -15,7 +11,7 @@ import DataFiller.Generator;
 import FlightService.Flight;
 import HotelService.Hotel;
 
-public class main {
+public class Main {
     public static void main(String[] args) {
         //init message broker
         MessageBroker.init();
@@ -40,7 +36,7 @@ public class main {
         MessageBroker.registerHotelService(hotelService1.getName(), hotelService1);
         MessageBroker.registerHotelService(hotelService2.getName(), hotelService2);
 
-        //rigister hotels and flights in tripbroker
+        //register hotels and flights in tripbroker
         TripBroker.addFlights(flightService1.getflights(), flightService1.getName());
         TripBroker.addFlights(flightService2.getflights(), flightService2.getName());
 
@@ -48,16 +44,15 @@ public class main {
         TripBroker.addHotels(hotelService2.getHotels(), hotelService2.getName());
 
         Client[] clients = new Client[FillProperties.getNoClients()];
-        //instanciate  clients
-        for(int i = 0; i < FillProperties.getNoClients(); i++) {
+        //instance  clients
+        for (int i = 0; i < FillProperties.getNoClients(); i++) {
             clients[i] = new Client();
             clients[i].start();
         }
 
 
-
         //wait for clients to finish
-        for(int i = 0; i < FillProperties.getNoClients(); i++) {
+        for (int i = 0; i < FillProperties.getNoClients(); i++) {
             try {
                 clients[i].join();
             } catch (InterruptedException e) {
@@ -67,12 +62,6 @@ public class main {
 
         //print stats
         TripBroker.printStats();
-
-
-
-
-
-
 
 
     }

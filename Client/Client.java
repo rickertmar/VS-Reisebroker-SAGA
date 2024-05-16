@@ -1,9 +1,11 @@
 package Client;
 //random
+
 import java.util.Random;
 
 //tripbroker
 import Tripbroker.TripBroker;
+
 public class Client extends Thread {
     static String[] hotels;
     static String[] flights;
@@ -30,7 +32,8 @@ public class Client extends Thread {
     public void setFlights(String[] flights) {
         this.flights = flights;
     }
-    public void setTimeoutUpper(int timeoutUpper) {s
+
+    public void setTimeoutUpper(int timeoutUpper) {
         this.timeoutUpper = timeoutUpper;
     }
 
@@ -53,7 +56,6 @@ public class Client extends Thread {
 
             //send to tripbroker
             TripBroker.book(randomHotel, randomFlight, randomNumberOfRooms, randomNumberOfSeats);
-
 
 
         }

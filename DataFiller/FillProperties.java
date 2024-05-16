@@ -1,8 +1,9 @@
 package DataFiller;
+
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 
 
 public class FillProperties {
@@ -14,6 +15,7 @@ public class FillProperties {
     }
 
     static Properties FailChances = new Properties();
+
     static {
         FailChances.setProperty("FailChance_noAnswer", "10");
         FailChances.setProperty("FailChance_noAnswer", "10");
@@ -21,22 +23,23 @@ public class FillProperties {
 
     private static Properties generateData(int numItems) {
         Properties properties = new Properties();
-        
+
         // Hotels generieren und zur Properties-Datei hinzufügen
         for (int i = 1; i <= numItems; i++) {
             String hotelName = "Hotel " + i;
             properties.setProperty(hotelName, generateHotelData()); // Hier können Sie Ihre Hotel-Daten generieren
         }
-        
+
         // Flüge generieren und zur Properties-Datei hinzufügen
         for (int i = 1; i <= numItems; i++) {
             String flightName = "Flight " + i;
             properties.setProperty(flightName, generateFlightData()); // Hier können Sie Ihre Flug-Daten generieren
         }
 
-              
+
         properties.setProperty("NotSendMessage", Integer.toString(getChanceToNotSendMessage()));
         properties.setProperty("NotDoAnything", Integer.toString(getChanceToNotDoAnything()));
+        properties.setProperty("NoClients", Integer.toString((int) (Math.random() * 50 + 50)));
 
         return properties;
     }
@@ -76,4 +79,14 @@ public class FillProperties {
     }
 
 
+    public static int getNoClients() {
+        Properties properties = new Properties();
+        try (FileInputStream fileInputStream = new FileInputStream("data.properties")) {
+            properties.load(fileInputStream);
+            return Integer.parseInt(properties.getProperty("NoClients"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

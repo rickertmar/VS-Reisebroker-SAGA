@@ -3,17 +3,16 @@ package HotelService;
 import java.util.Random;
 
 public class Hotel {
-    private  Random random = new Random();
+    private Random random = new Random();
     public final String name;
     private int totalBeds;
     private int availableBeds;
 
 
-    public Hotel() {
-        // randomized initial available beds
-        this.name = "Hotel " + random.nextInt(1000);
-        this.totalBeds = random.nextInt(100,200);
-        this.availableBeds = random.nextInt(50,100);
+    public Hotel(String name, int totalBeds) {
+        this.name = name;
+        this.totalBeds = totalBeds;
+        this.availableBeds = totalBeds;
     }
 
     public synchronized boolean bookRooms(int numRooms) {

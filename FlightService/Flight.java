@@ -3,17 +3,15 @@ package FlightService;
 import java.util.Random;
 
 public class Flight {
-    private Random random = new Random();
     public final String name;
     private final int totalSeats;
     private int availableSeats;
 
 
-    public Flight(String name, int totalSeats, int availableBeds) {
+    public Flight(String name, int totalSeats) {
         this.name = name;
         this.totalSeats = totalSeats;
-        this.availableSeats = availableBeds;
-
+        this.availableSeats = totalSeats;
     }
 
     public synchronized boolean bookSeats(int numSeats) {
