@@ -18,6 +18,8 @@ public class HotelService {
 
     private Map<String, CompletableFuture<Message>> Answers = new HashMap<String, CompletableFuture<Message>>();
 
+
+
     public HotelService(String name, Hotel[] hotels){
         this.name = name;
         this.hotels = hotels;
@@ -26,8 +28,12 @@ public class HotelService {
     public String getName() {
         return name;
     }
-    public Hotel[] getHotels() {
-        return hotels;
+    public String[] getHotels() {
+        String[] hotelNames = new String[hotels.length];
+        for (int i = 0; i < hotels.length; i++) {
+            hotelNames[i] = hotels[i].name;
+        }
+        return hotelNames;
     }
     private Random randomNumber = new Random();
     public void receiveMessage(Message RequestMessage) {

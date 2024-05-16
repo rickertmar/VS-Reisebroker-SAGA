@@ -55,12 +55,12 @@ public class FillProperties {
 
     // Samuel Anfang
 
-    private static int getChanceToNotSendMessage() {
-        return (int) (Math.random() * 101);
+    public static int getChanceToNotSendMessage() {
+        return (int) (Math.random() * 100);
     }
 
-    private static int getChanceToNotDoAnything() {
-        return (int) (Math.random() * 101);
+    public static int getChanceToNotDoAnything() {
+        return (int) (Math.random() * 100);
 
     }
 

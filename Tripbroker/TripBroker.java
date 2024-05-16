@@ -4,8 +4,6 @@ import java.util.*;
 
 import MessageBroker.Message;
 
-import MessageBroker.MessageContent;
-
 import MessageBroker.HotelBooking;
 
 import MessageBroker.FlightBooking;
@@ -16,21 +14,37 @@ import MessageBroker.FlightCancel;
 
 import MessageBroker.HotelCancel;
 
-import java.time.LocalDateTime;
-
 import MessageBroker.MessageBroker;
+
+enum Status{
+    HotelPending,
+    HotelConfirmed,
+    HotelCanceled,
+    FlightPending,
+    FlightConfirmed,
+    FlightCanceled,
+
+}
+
 
 public class TripBroker {
 
     public static final String name = "TripBroker";
 
-    private static MessageBroker messageBroker;
+
+    private static int nTransactions = 0;
+
+    private static int nTransactionsCompleted = 0;
+
+    private static int nTransactionsFailed = 0;
+
+    private static int nFlightscanceled = 0;
+
+    private static int nHotelscanceled = 0;
+
+
 
     private static Map<String,ComboBooking> UUIDtoBookingMap = new HashMap<String,ComboBooking>();
-
-
-
-
     private static Map<String,String> HotelToServiceMap = new HashMap<String,String>();
     private static Map<String,String> FlightToServiceMap = new HashMap<String,String>();
 
@@ -45,15 +59,13 @@ public class TripBroker {
             HotelToServiceMap.put(hotel,service);
         }
     }
-    public  static void setMessageBroker(MessageBroker messageBroker){
-        TripBroker.messageBroker = messageBroker;
-    }
+
 
     public static String[] getHotels(){
         return HotelToServiceMap.keySet().toArray(new String[0]);
     }
 
-    public static void receiveMessage(Message message){
+    public static synchronized void receiveMessage(Message message){
         String transactionId = message.getTransactionId();
         ComboBooking comboBooking = UUIDtoBookingMap.get(transactionId);
         if(comboBooking == null){
@@ -73,14 +85,21 @@ public class TripBroker {
                         comboBooking.HotelAnswer(false);
                         Message cancelMessage = new Message(comboBooking.HotelTransactionID,name,HotelToServiceMap.get(comboBooking.hotelBooking.getHotelName()),new HotelCancel(comboBooking.hotelBooking.getHotelName(),comboBooking.hotelBooking.getNumberOfRooms()));
                         sendToMessageBroker(cancelMessage);
+                        nTransactionsFailed++;
+
                     }
                     break;
 
                 case FlightPending:
                     if(answer.isSuccess()){
                         comboBooking.FlightAnswer(true);
+                        nTransactionsCompleted++;
                     }else{
                         comboBooking.FlightAnswer(false);
+                        nTransactionsFailed++;
+
+                        nHotelscanceled++;
+
                         Message cancelMessage = new Message(comboBooking.FlightTransactionID,name,FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()),new FlightCancel(comboBooking.flightBooking.getFlightNumber(),comboBooking.flightBooking.getNumberOfSeats()));
                         sendToMessageBroker(cancelMessage);
                     }
@@ -92,8 +111,16 @@ public class TripBroker {
         }
 
     }
+    public static void printStats(){
+        System.out.println("Number of Transactions: "+nTransactions);
+        System.out.println("Number of Transactions Completed: "+nTransactionsCompleted);
+        System.out.println("Number of Transactions Failed: "+nTransactionsFailed);
+        System.out.println("Number of Flights Canceled: "+nFlightscanceled);
+        System.out.println("Number of Hotels Canceled: "+nHotelscanceled);
+    }
+    public static synchronized void book(String hotel, String flight, int rooms, int seats){
+        nTransactions++;
 
-    public static void book(String hotel, String flight, int rooms, int seats){
         String hotelService = HotelToServiceMap.get(hotel);
         String flightService = FlightToServiceMap.get(flight);
         if(hotelService == null || flightService == null){
@@ -111,19 +138,8 @@ public class TripBroker {
     }
 
     static void sendToMessageBroker(Message message){
-        messageBroker.send(message);
+        MessageBroker.send(message);
     }
-
-
-
-
-
-
-    //1 beide true  dann passt
-
-    // einer false dann muss der der true ist rollback bzw cancel
-
-    // beide false dann passt auch
 
 
 }
@@ -157,14 +173,5 @@ class ComboBooking{
             status = Status.FlightCanceled;
         }
     }
-
-}
-enum Status{
-    HotelPending,
-    HotelConfirmed,
-    HotelCanceled,
-    FlightPending,
-    FlightConfirmed,
-    FlightCanceled,
 
 }

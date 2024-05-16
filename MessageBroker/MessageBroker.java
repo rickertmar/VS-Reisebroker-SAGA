@@ -18,14 +18,13 @@ public class MessageBroker {
     private static int Timeout_ns =5000000;
     private static ConcurrentHashMap<String, HotelService> HotelAdresses = new ConcurrentHashMap<String, HotelService>();
     private static ConcurrentHashMap<String, FlightService> FlightAdresses = new ConcurrentHashMap<String, FlightService>();
-    private static TripBroker tripBroker;
 
-    public static void init(TripBroker tripBroker) {
-        MessageBroker.tripBroker = tripBroker;
+
+    public static void init() {
         messageQueue = new SynchronousQueue<Message>();
         Worker worker = new Worker();
         worker.start();
-        Worker.Deamon deamon = new Worker.Deamon();
+        Deamon deamon = new Deamon();
         deamon.start();
     }
     public static void registerHotelService(String name, HotelService hotelService) {
@@ -56,7 +55,7 @@ public class MessageBroker {
                 }
             }
         }
-
+    }
         static class Deamon extends Thread {
             public void run() {
                 while (true) {
@@ -108,11 +107,11 @@ public class MessageBroker {
                 case "Answer":
                     //send back to original sender ( allways trip broker)
                     waitingforAnswer.remove(message.getTransactionId());
-                    tripBroker.receiveMessage(message);
+                    TripBroker.receiveMessage(message);
 
                     break;
             }
         }
 
 }
-}
+
