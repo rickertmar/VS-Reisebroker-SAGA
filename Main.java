@@ -20,15 +20,23 @@ public class Main {
 
 
         //create 2 flight services
-        Flight[] flights1 = Generator.fillFlights().toArray(new Flight[0]);
+        Flight[] flights = Generator.fillFlights().toArray(new Flight[0]);
+        Flight[] flights1 = new Flight[flights.length / 2];
+        Flight[] flights2 = new Flight[flights.length - flights1.length];
+        System.arraycopy(flights, 0, flights1, 0, flights1.length);
+        System.arraycopy(flights, flights1.length, flights2, 0, flights2.length);
+
         FlightService flightService1 = new FlightService("FlightService1", flights1);
-        Flight[] flights2 = Generator.fillFlights().toArray(new Flight[0]);//sm like that
         FlightService flightService2 = new FlightService("FlightService2", flights2);
 
         //create 2 hotel services
-        Hotel[] hotels1 = Generator.fillHotels().toArray(new Hotel[0]);//sm like that
+        Hotel[] hotels = Generator.fillHotels().toArray(new Hotel[0]);
+        Hotel[] hotels1 = new Hotel[hotels.length / 2];
+        Hotel[] hotels2 = new Hotel[hotels.length - hotels1.length];
+        System.arraycopy(hotels, 0, hotels1, 0, hotels1.length);
+        System.arraycopy(hotels, hotels1.length, hotels2, 0, hotels2.length);
+
         HotelService hotelService1 = new HotelService("HotelService1", hotels1);
-        Hotel[] hotels2 = Generator.fillHotels().toArray(new Hotel[0]);//sm like that
         HotelService hotelService2 = new HotelService("HotelService2", hotels2);
 
         //register services
