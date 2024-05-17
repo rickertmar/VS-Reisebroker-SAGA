@@ -126,8 +126,6 @@ public class TripBroker {
             comboBooking.status = Status.FlightPending;
         } else {
             comboBooking.HotelAnswer(false);
-            Message cancelMessage = new Message(comboBooking.TransactionID, name, HotelToServiceMap.get(comboBooking.hotelBooking.getHotelName()), new HotelCancel(comboBooking.hotelBooking.getHotelName(), comboBooking.hotelBooking.getNumberOfRooms()));
-            sendToMessageBroker(cancelMessage);
             nTransactionsFailed++;
             nHotelscanceled++;
         }
@@ -146,8 +144,9 @@ public class TripBroker {
         } else {
             comboBooking.FlightAnswer(false);
             nTransactionsFailed++;
-            nFlightscanceled++;  // Correctly increment flight cancellations
-            Message cancelMessage = new Message(comboBooking.TransactionID, name, FlightToServiceMap.get(comboBooking.flightBooking.getFlightNumber()), new FlightCancel(comboBooking.flightBooking.getFlightNumber(), comboBooking.flightBooking.getNumberOfSeats()));
+            nFlightscanceled++;  // Correctly increment flight cancel count
+            // Cancel the hotel booking
+            Message cancelMessage = new Message(comboBooking.TransactionID, name, HotelToServiceMap.get(comboBooking.hotelBooking.getHotelName()), new HotelCancel(comboBooking.hotelBooking.getHotelName(), comboBooking.hotelBooking.getNumberOfRooms()));
             sendToMessageBroker(cancelMessage);
         }
     }
