@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="VT-Reisebroker-SAGA:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/VT_Reisebroker_SAGA_jar</output-path>
+    <root id="archive" name="VT-Reisebroker-SAGA.jar">
+      <element id="module-output" name="VT-Reisebroker-SAGA" />
+    </root>
+  </artifact>
+</component>

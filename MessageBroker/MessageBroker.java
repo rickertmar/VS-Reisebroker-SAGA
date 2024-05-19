@@ -159,13 +159,28 @@ public class MessageBroker {
     public static void sendToService(Message message) {
         switch (message.getContent().getType()) {
             case "HotelBooking":
+                putWaitingForAnswer(message.getTransactionId(), message);
+                HotelService hotelService = HotelAddresses.get(message.getRecipient());
+                hotelService.receiveMessage(message);
+                break;
             case "FlightBooking":
+                putWaitingForAnswer(message.getTransactionId(), message);
+                FlightService flightService = FlightAddresses.get(message.getRecipient());
+                flightService.receiveMessage(message);
+                break;
             case "FlightCancel":
+                putWaitingForAnswer(message.getTransactionId(), message);
+                FlightService flightService1 = FlightAddresses.get(message.getRecipient());
+                flightService1.receiveMessage(message);
+                break;
             case "HotelCancel":
                 putWaitingForAnswer(message.getTransactionId(), message);
+                HotelService hotelService1 = HotelAddresses.get(message.getRecipient());
+                hotelService1.receiveMessage(message);
                 // Logic to send message to the appropriate service
                 break;
             case "Answer":
+                System.out.println("Sending answer back to Trip Broker");
                 removeWaitingForAnswer(message.getTransactionId());
                 TripBroker.receiveMessage(message);
                 break;
