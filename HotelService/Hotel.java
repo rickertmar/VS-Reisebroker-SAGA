@@ -1,9 +1,6 @@
 package HotelService;
 
-import java.util.Random;
-
 public class Hotel {
-    private Random random = new Random();
     public final String name;
     private int totalBeds;
     private int availableBeds;
@@ -15,6 +12,14 @@ public class Hotel {
         this.availableBeds = totalBeds;
     }
 
+    /**
+     * Attempts to book a specified number of rooms (beds) in the hotel.
+     * If sufficient beds are available, books the beds and returns true.
+     * Otherwise, booking fails and returns false.
+     *
+     * @param numRooms The number of rooms (beds) to book.
+     * @return true if the booking is successful, false otherwise.
+     */
     public synchronized boolean bookRooms(int numRooms) {
         if (availableBeds >= numRooms) {
             availableBeds -= numRooms;
@@ -27,6 +32,12 @@ public class Hotel {
         }
     }
 
+    /**
+     * Releases a specified number of rooms (beds), making them available for booking again.
+     * This method is used to cancel bookings and increase the number of available beds.
+     *
+     * @param numRooms The number of rooms (beds) to release.
+     */
     public synchronized void releaseRooms(int numRooms) {
         availableBeds += numRooms;
         System.out.println(numRooms + " rooms released at " + name);

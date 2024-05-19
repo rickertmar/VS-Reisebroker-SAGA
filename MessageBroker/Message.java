@@ -29,7 +29,7 @@ public class Message {
         this.sender = sender;
         this.recipient = recipient;
         this.content = content;
-        this.timestamp = LocalDateTime.now(); // Gets the current time
+        this.timestamp = LocalDateTime.now();
     }
 
     // Synchronized method to generate unique transaction IDs

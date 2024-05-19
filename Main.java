@@ -15,11 +15,11 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        //init message broker
+        // init message broker
         MessageBroker.init();
 
 
-        //create 2 flight services
+        // create 2 flight services
         Flight[] flights = Generator.fillFlights().toArray(new Flight[0]);
         Flight[] flights1 = new Flight[flights.length / 2];
         Flight[] flights2 = new Flight[flights.length - flights1.length];
@@ -29,7 +29,7 @@ public class Main {
         FlightService flightService1 = new FlightService("FlightService1", flights1);
         FlightService flightService2 = new FlightService("FlightService2", flights2);
 
-        //create 2 hotel services
+        // create 2 hotel services
         Hotel[] hotels = Generator.fillHotels().toArray(new Hotel[0]);
         Hotel[] hotels1 = new Hotel[hotels.length / 2];
         Hotel[] hotels2 = new Hotel[hotels.length - hotels1.length];
@@ -39,36 +39,36 @@ public class Main {
         HotelService hotelService1 = new HotelService("HotelService1", hotels1);
         HotelService hotelService2 = new HotelService("HotelService2", hotels2);
 
-        //register services
+        // register services
         MessageBroker.registerFlightService(flightService1.getName(), flightService1);
         MessageBroker.registerFlightService(flightService2.getName(), flightService2);
 
         MessageBroker.registerHotelService(hotelService1.getName(), hotelService1);
         MessageBroker.registerHotelService(hotelService2.getName(), hotelService2);
 
-        //register hotels and flights in tripbroker
+        // register hotels and flights in tripbroker
         TripBroker.addFlights(flightService1.getFlights(), flightService1.getName());
         TripBroker.addFlights(flightService2.getFlights(), flightService2.getName());
 
         TripBroker.addHotels(hotelService1.getHotels(), hotelService1.getName());
         TripBroker.addHotels(hotelService2.getHotels(), hotelService2.getName());
 
-        //add flights to Clients
+        // add flights to Clients
         Client.addFlights(flightService1.getFlights());
         Client.addFlights(flightService2.getFlights());
-        //add hotels to Clients
+        // add hotels to Clients
         Client.addHotels(hotelService1.getHotels());
         Client.addHotels(hotelService2.getHotels());
 
         Client[] clients = new Client[FillProperties.getNoClients()];
-        //instance  clients
+        // instance  clients
         for (int i = 0; i < FillProperties.getNoClients(); i++) {
             clients[i] = new Client();
             clients[i].start();
         }
 
 
-        //wait for clients to finish
+        // wait for clients to finish
         for (int i = 0; i < FillProperties.getNoClients(); i++) {
             try {
                 clients[i].join();
@@ -77,7 +77,7 @@ public class Main {
             }
         }
 
-        //print stats
+        // print stats
         System.out.println("TripBroker stats:");
         TripBroker.printStats();
         System.out.println("Message broker stats:");
